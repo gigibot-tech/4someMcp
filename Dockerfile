@@ -1,22 +1,28 @@
 # Dockerfile
-
-# 1. Use a slim Python base
 FROM python:3.11-slim
 
-# 2. Set working dir
-WORKDIR /app
+# 1) Create a non-root user (optional but recommended)
+RUN addgroup --system app && adduser --system --ingroup app app
+USER app
 
-# 3. Install runtime dependencies
-#    - uvicorn (for ASGI)
-#    - mcp-alchemy
-#    - your SQL driver (e.g. psycopg2-binary for Postgres)
+# 2) Workdir
+WORKDIR /home/app
+
+# 3) Install MCP Alchemy + SQL driver
+#    - no need to install `uvx` or `uv`; MCP Alchemy will detect HTTP transport
 RUN pip install --no-cache-dir \
-    uvicorn \
-    mcp-alchemy==2025.6.19.201831 \
-    psycopg2-binary
+      mcp-alchemy==2025.6.19.201831 \
+      psycopg2-binary
 
-# 4. Expose the port (Railway will map it from $PORT)
+# 4) Expose the default MCP HTTP port
 EXPOSE 8000
 
-# 5. Entrypoint: launch the built‐in FastAPI app
-CMD ["uvicorn", "mcp_alchemy.server:app", "--host", "0.0.0.0", "--port", "8000"]
+# 5) Tell MCP Alchemy where your DB lives
+#    (Railway: set this in the Dashboard → Variables)
+
+# 6) Run the built-in MCP Alchemy server (HTTP transport on /mcp)
+ENTRYPOINT ["python", "-m", "mcp_alchemy.server"]
+# by default it will read DB_URL, start on 0.0.0.0:8000, 
+# and mount the MCP endpoint at `POST /mcp`
+
+# (If you need to change host/port you can append `--host 0.0.0.0 --port 8000` here)
