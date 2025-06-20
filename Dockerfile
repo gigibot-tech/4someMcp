@@ -1,16 +1,13 @@
+# Use a slim Python base
 FROM python:3.11-slim
 
-# copy your minimal files (here just requirements.txt)
-WORKDIR /app
-COPY requirements.txt .
+# install uvx and your MCP package
+RUN pip install --no-cache-dir uvx mcp-alchemy==2025.6.19.201831 psycopg2-binary
 
-# install
-RUN pip install --no-cache-dir -r requirements.txt
-
-# expose default port
+# expose default HTTP port (optional, for clarity)
 EXPOSE 8000
 
-# run the MCP
+# run the MCP server via UVX
 CMD ["uvx",
      "--from", "mcp-alchemy==2025.6.19.201831",
      "--with", "psycopg2-binary",
