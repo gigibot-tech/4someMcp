@@ -1,12 +1,8 @@
 # Dockerfile
 FROM python:3.11-slim
 
-# 1) Create a non-root user (optional but recommended)
-RUN addgroup --system app && adduser --system --ingroup app app
-USER app
-
 # 2) Workdir
-WORKDIR /home/app
+WORKDIR /app
 
 # 3) Install MCP Alchemy + SQL driver
 #    - no need to install `uvx` or `uv`; MCP Alchemy will detect HTTP transport
