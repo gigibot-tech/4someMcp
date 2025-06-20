@@ -13,6 +13,6 @@ RUN pip install \
 # copy our wrapper
 COPY entrypoint.py .
 
+# Expose the port and launch via Gunicorn
 EXPOSE 8000
-
-CMD ["uvicorn", "entrypoint:main_app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "entrypoint:app"]
