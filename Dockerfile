@@ -1,19 +1,22 @@
 # Dockerfile
+
+# 1. Use a slim Python base
 FROM python:3.11-slim
 
+# 2. Set working dir
 WORKDIR /app
 
-# install FastAPI, Uvicorn and MCP-Alchemy + your DB driver
-RUN pip install \
-      flask \
-      gunicorn \
-      uvicorn[standard] \
-      mcp-alchemy==2025.6.19.201831 \
-      psycopg2-binary
+# 3. Install runtime dependencies
+#    - uvicorn (for ASGI)
+#    - mcp-alchemy
+#    - your SQL driver (e.g. psycopg2-binary for Postgres)
+RUN pip install --no-cache-dir \
+    uvicorn \
+    mcp-alchemy==2025.6.19.201831 \
+    psycopg2-binary
 
-# copy our wrapper
-COPY entrypoint.py .
-
-# Expose the port and launch via Gunicorn
+# 4. Expose the port (Railway will map it from $PORT)
 EXPOSE 8000
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "entrypoint:app"]
+
+# 5. Entrypoint: launch the built‐in FastAPI app
+CMD ["uvicorn", "mcp_alchemy.server:app", "--host", "0.0.0.0", "--port", "8000"]
