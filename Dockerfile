@@ -6,6 +6,7 @@ WORKDIR /app
 # install FastAPI, Uvicorn and MCP-Alchemy + your DB driver
 RUN pip install \
       flask \
+      gunicorn \
       uvicorn[standard] \
       mcp-alchemy==2025.6.19.201831 \
       psycopg2-binary
